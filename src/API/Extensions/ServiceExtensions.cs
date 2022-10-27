@@ -3,13 +3,12 @@ using API.Configurations;
 using API.Middlewares;
 using Application.Contracts;
 using Application.Services;
-using AspNetCoreRateLimit;
+
 using Domain.ConfigurationModels;
-using Domain.Entities;
 using Infrastructure;
 using Infrastructure.Contracts;
 using Infrastructure.Data.Persistence;
-using Marvin.Cache.Headers;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +17,11 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+
+using FluentValidation.AspNetCore;
+using Application.Validations;
+using System;
+using Application.DataTransferObjects;
 
 namespace API.Extensions;
 
@@ -54,16 +58,15 @@ public static class ServiceExtensions
 
     public static void ConfigureMvc(this IServiceCollection services)
     {
-        //services.AddMvc()
-        //    .ConfigureApiBehaviorOptions(o =>
-        //    {
-        //        o.InvalidModelStateResponseFactory = context => new ValidationFailedResult(context.ModelState);
-        //    }).AddFluentValidation(x => {
-        //        x.RegisterValidatorsFromAssemblyContaining<UserValidator>();
-        //        x.ImplicitlyValidateChildProperties = true;
-        //        x.ImplicitlyValidateRootCollectionElements = true;
-        //    }
-        //    );
+        services.AddMvc()
+                .ConfigureApiBehaviorOptions(o =>
+                {
+                    o.InvalidModelStateResponseFactory = context => new ValidationFailedResult(context.ModelState);
+                }).AddFluentValidation(x =>
+                    x.RegisterValidatorsFromAssemblyContaining<CustomerValidator>());
+        // services.AddValidatorsFromAssemblyContaining<CustomerValidator>();
+       
+
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     }
     public static void ConfigureApiVersioning(this IServiceCollection services, IConfiguration configuration)
@@ -83,42 +86,8 @@ public static class ServiceExtensions
         services.AddMvcCore().AddApiExplorer();
     }
 
-    public static void ConfigureResponseCaching(this IServiceCollection services) => 
-        services.AddResponseCaching();
-
-    public static void ConfigureHttpCacheHeaders(this IServiceCollection services) => 
-        services.AddHttpCacheHeaders(expirationOpt =>
-        {
-            expirationOpt.MaxAge = 65;
-            expirationOpt.CacheLocation = CacheLocation.Private;
-        }, validationOpt =>
-        {
-
-            validationOpt.MustRevalidate = true;
-        });
-
-    public static void ConfigureRateLimitingOptions(this IServiceCollection services)
-    {
-        var rateLimitingRules = new List<RateLimitRule>
-        {
-            new RateLimitRule
-            {
-                Endpoint = "*",
-                Limit = 10,
-                Period = "5m"
-            }
-        };
-
-        services.Configure<IpRateLimitOptions>(opts =>
-        {
-            opts.GeneralRules = rateLimitingRules;
-        });
-        services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-        services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-        services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-        services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
-    }
-
+    
+   
    
 
     public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)

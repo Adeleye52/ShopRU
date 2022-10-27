@@ -1,6 +1,8 @@
 using API.Extensions;
 using API.Middlewares;
+using Application.Validations;
 using AspNetCoreRateLimit;
+using FluentValidation;
 using Infrastructure.Contracts;
 using Infrastructure.Data.Persistence;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -20,6 +22,7 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nl
 builder.Services.ConfigureCors();
 builder.Services.ConfigureMvc();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddValidatorsFromAssemblyContaining<CustomerValidator>();
 builder.Services.ConfigureIisIntegration();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureRepositoryManager();
