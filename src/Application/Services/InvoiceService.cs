@@ -25,29 +25,39 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<SuccessResponse<InvoiceDto>> GetInvoice(Guid customerId,string productType,  decimal bill)
+        public async Task<SuccessResponse<InvoiceDto>> GetInvoice(GetInvoiceDto model)
         {
-            var customer = await _repository.Customer.FirstOrDefaultAsync(x => x.Id == customerId);
+            var customer = await _repository.Customer.FirstOrDefaultAsync(x => x.Id == model.CustomerId);
             if (customer == null)
                 throw new RestException(HttpStatusCode.NotFound, "Customer not found");
-            var discount = 0m;
+            var customerDiscount = 0m;
             decimal discountPercentage = 0m;
-            if (productType.ToLower() != EPruductType.Groceries.ToString().ToLower())
+            var bill = model.TotalBill;
+            if (model.ShoppingType.ToLower() != EPruductType.Groceries.ToString().ToLower())
             {
                 discountPercentage = await GetDiscount(customer);
-                discount = GetDiscountOnCustomer(bill, discountPercentage);
-                bill -= discount;
+                customerDiscount = GetDiscountOnCustomer(bill, discountPercentage);
+                bill -= customerDiscount;
             }
             var priceDiscount = await GetDiscountOnProductPrice(bill);
             var totalbill = bill - priceDiscount;
 
-            InvoiceDto invoice = new ()
+            InvoiceDto invoice = new()
             {
+                CustomerId = model.CustomerId,
+                DiscoutPercentage = discountPercentage,
+                TotalPrice = totalbill,
+                DiscountedPrice = customerDiscount + priceDiscount,
 
-            }
+            };
 
 
-            throw new NotImplementedException();
+            return new SuccessResponse<InvoiceDto>
+            {
+                Data = invoice,
+                Success = true,
+                Message = "Data retrieved Successfully"
+            };
         }
         private async Task<decimal> GetDiscount(Customer customer)
         {
@@ -55,22 +65,21 @@ namespace Application.Services
             Discount discount = null;
             if (customer.Type == ECustomerType.Employee.ToString())
             {
-                discount = await _repository.Coupon.FirstOrDefaultAsync(x => x.Type == EDiscountType.Employee.ToString());
+                discount = await _repository.Discount.FirstOrDefaultAsync(x => x.Type == EDiscountType.Employee.ToString());
                 discountPercentage = discount?.Percentage ?? 0m;
                
             }
             else if (customer.Type == ECustomerType.Affilate.ToString())
             {
-                discount = await _repository.Coupon.FirstOrDefaultAsync(x => x.Type == EDiscountType.Employee.ToString());
+                discount = await _repository.Discount.FirstOrDefaultAsync(x => x.Type == EDiscountType.Employee.ToString());
                 discountPercentage = discount?.Percentage ?? 0m;
 
 
             }
             else if (customer.CreatedAt.AddYears(2) > DateTime.UtcNow)
             {
-                discount = await _repository.Coupon.FirstOrDefaultAsync(x => x.Type == EDiscountType.Employee.ToString());
+                discount = await _repository.Discount.FirstOrDefaultAsync(x => x.Type == EDiscountType.Employee.ToString());
                 discountPercentage = discount?.Percentage ?? 0m;
-
 
             }
             
@@ -85,7 +94,7 @@ namespace Application.Services
         }
         private async Task<decimal> GetDiscountOnProductPrice(decimal totalPrice)
         {
-            var discount = await _repository.Coupon.FirstOrDefaultAsync(x=>x.Type == EDiscountType.ProductPrice.ToString());
+            var discount = await _repository.Discount.FirstOrDefaultAsync(x=>x.Type == EDiscountType.ProductPrice.ToString());
             var discountVal = discount.Percentage / 100;
             var total = totalPrice - (totalPrice % 100);
            

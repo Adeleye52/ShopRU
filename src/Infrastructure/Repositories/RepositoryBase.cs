@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using Infrastructure.Contracts;
-using Infrastructure.Data.DbContext;
+using Infrastructure.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;

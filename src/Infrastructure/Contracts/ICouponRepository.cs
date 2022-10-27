@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Contracts
 {
-    public interface ICouponRepository : IRepositoryBase<Discount>
+    public interface IDiscountRepository : IRepositoryBase<Discount>
     {
     }
 }

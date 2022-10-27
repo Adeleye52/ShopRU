@@ -2,13 +2,13 @@
 
 using Domain.Entities;
 using Infrastructure.Contracts;
-using Infrastructure.Data.DbContext;
+using Infrastructure.Data.Persistence;
 
 namespace Infrastructure.Repositories
 {
-    public class CouponRepository:RepositoryBase<Discount>, ICouponRepository
+    public class DiscountRepository:RepositoryBase<Discount>, IDiscountRepository
     {
-        public CouponRepository(AppDbContext context) : base(context)
+        public DiscountRepository(AppDbContext context) : base(context)
         {
 
         }

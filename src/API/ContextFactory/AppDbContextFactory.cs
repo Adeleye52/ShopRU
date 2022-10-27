@@ -1,5 +1,5 @@
 using Infrastructure.Data;
-using Infrastructure.Data.DbContext;
+using Infrastructure.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -16,7 +16,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
             .Build();
 
         var builder = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlServer(config.GetConnectionString("DefaultConnection"), 
+            .UseNpgsql(config.GetConnectionString("DefaultConnection"), 
                 b => b.MigrationsAssembly("API"));
         return new AppDbContext(builder.Options);
     }

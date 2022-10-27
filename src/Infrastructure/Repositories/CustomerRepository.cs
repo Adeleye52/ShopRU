@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 using Infrastructure.Contracts;
-using Infrastructure.Data.DbContext;
+using Infrastructure.Data.Persistence;
 
 
 namespace Infrastructure.Repositories

@@ -10,6 +10,6 @@ namespace Application.Contracts
 {
     public interface IInvoiceService
     {
-        Task<SuccessResponse<InvoiceDto>> GetInvoice(Guid customerId, decimal price);
+        Task<SuccessResponse<InvoiceDto>> GetInvoice(GetInvoiceDto model);
     }
 }

@@ -1,24 +1,27 @@
 using Application.Contracts;
 using AutoMapper;
-using Domain.Entities;
-using Domain.Entities.Identity;
 using Infrastructure.Contracts;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
 
 public class ServiceManager : IServiceManager
 {
-   // private readonly Lazy<ICompanyService> _companyService;
-    public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, 
-        UserManager<User> userManager, IConfiguration configuration)
+   private readonly Lazy<IDiscountService> _discountService;
+   private readonly Lazy<ICustomerService> _customerService;
+   private readonly Lazy<IInvoiceService> _invoiceService;
+    public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper)
     {
-        //_companyService = 
-        //    new Lazy<ICompanyService>(() => new CompanyService(repositoryManager, logger, mapper));
-        
+        _discountService =
+            new Lazy<IDiscountService>(() => new DiscountService(repositoryManager, mapper));
+        _customerService =
+            new Lazy<ICustomerService>(() => new CustomerService(repositoryManager, mapper));
+        _invoiceService =
+            new Lazy<IInvoiceService>(() => new InvoiceService(repositoryManager, mapper));
+
     }
-    
-   // public ICompanyService CompanyService => _companyService.Value;
-  
+
+     public IDiscountService DiscountService => _discountService.Value;
+     public ICustomerService CustomerService => _customerService.Value;
+     public IInvoiceService InvoiceService => _invoiceService.Value;
+
 }

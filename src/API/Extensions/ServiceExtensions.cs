@@ -1,20 +1,23 @@
 using System.Text;
+using API.Configurations;
+using API.Middlewares;
 using Application.Contracts;
 using Application.Services;
 using AspNetCoreRateLimit;
 using Domain.ConfigurationModels;
 using Domain.Entities;
-using Domain.Entities.Identity;
 using Infrastructure;
 using Infrastructure.Contracts;
-using Infrastructure.Data.DbContext;
+using Infrastructure.Data.Persistence;
 using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace API.Extensions;
 
@@ -49,15 +52,35 @@ public static class ServiceExtensions
                 opts.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
             });
 
-
-    public static void ConfigureVersioning(this IServiceCollection services)
+    public static void ConfigureMvc(this IServiceCollection services)
+    {
+        //services.AddMvc()
+        //    .ConfigureApiBehaviorOptions(o =>
+        //    {
+        //        o.InvalidModelStateResponseFactory = context => new ValidationFailedResult(context.ModelState);
+        //    }).AddFluentValidation(x => {
+        //        x.RegisterValidatorsFromAssemblyContaining<UserValidator>();
+        //        x.ImplicitlyValidateChildProperties = true;
+        //        x.ImplicitlyValidateRootCollectionElements = true;
+        //    }
+        //    );
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+    }
+    public static void ConfigureApiVersioning(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddApiVersioning(opt =>
         {
-            opt.ReportApiVersions = true;
             opt.AssumeDefaultVersionWhenUnspecified = true;
             opt.DefaultApiVersion = new ApiVersion(1, 0);
+            opt.ReportApiVersions = true;
         });
+        services.AddVersionedApiExplorer(opt =>
+        {
+            opt.GroupNameFormat = "'v'VVV";
+            opt.SubstituteApiVersionInUrl = true;
+        });
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+        services.AddMvcCore().AddApiExplorer();
     }
 
     public static void ConfigureResponseCaching(this IServiceCollection services) => 
@@ -96,20 +119,7 @@ public static class ServiceExtensions
         services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
     }
 
-    public static void ConfigureIdentity(this IServiceCollection services)
-    {
-        var builder = services.AddIdentity<User, IdentityRole>(opt =>
-            {
-                opt.Password.RequireDigit = true;
-                opt.Password.RequireLowercase = true;
-                opt.Password.RequireUppercase = true;
-                opt.Password.RequireNonAlphanumeric = false;
-                opt.Password.RequiredLength = 8;
-                opt.User.RequireUniqueEmail = true;
-            })
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
-    }
+   
 
     public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
     {
@@ -143,28 +153,12 @@ public static class ServiceExtensions
     {
         services.AddSwaggerGen(s =>
         {
-            s.SwaggerDoc("v1", new OpenApiInfo {
-                Title = "ShopRU API",
-                Version = "v1",
-                Description = "ShopRu Web API Template",
-                TermsOfService = new Uri("https://prunedge.com/terms"),
-                Contact = new OpenApiContact
-                {
-                    Name = "Abdul Lateeef Adeleye",
-                    Email = "",
-                    Url = new Uri("")
-                },
-                License = new OpenApiLicense
-                {
-                    Name = "Shop API LICX",
-                    Url = new Uri("https://prunedge.com/developer-licence")
-                }
-            });
-            //s.SwaggerDoc("v2", new OpenApiInfo { Title = "Prunedge Web API2", Version = "v2" });
+            s.OperationFilter<RemoveVersionFromParameter>();
+            s.SwaggerDoc("v2", new OpenApiInfo { Title = "Shop RU webapi", Version = "v2" });
 
             var xmlFile = $"{typeof(Presentation.AssemblyReference).Assembly.GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            s.IncludeXmlComments(xmlPath);
+            //s.IncludeXmlComments(xmlPath);
 
             s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {

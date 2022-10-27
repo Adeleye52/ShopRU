@@ -4,43 +4,61 @@
         <name>Presentation</name>
     </assembly>
     <members>
-        <member name="M:Presentation.Controllers.AuthController.RegisterUser(Application.DataTransferObjects.UserForRegistrationDto)">
+        <member name="M:Presentation.Controllers.CustomerController.CreateCustomer(Application.DataTransferObjects.CustomerCreateDto)">
             <summary>
-            Registers new user
+            Create a new customer
             </summary>
-            <param name="userForRegistrationDto"></param>
-            <returns>New User</returns>
-        </member>
-        <member name="M:Presentation.Controllers.AuthController.Authenticate(Application.DataTransferObjects.UserForLoginDto)">
-            <summary>
-            Logs in user with email and password
-            </summary>
-            <param name="user"></param>
-            <returns>Jwt Token</returns>
-        </member>
-        <member name="M:Presentation.Controllers.AuthController.RefreshToken(Application.DataTransferObjects.TokenDto)">
-            <summary>
-            Refresh access token
-            </summary>
-            <param name="tokenDto"></param>
+            <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:Presentation.Controllers.CompaniesController.GetCompanies(Shared.RequestFeatures.CompanyParameters)">
+        <member name="M:Presentation.Controllers.CustomerController.GetCustomerById(System.Guid)">
             <summary>
-            Get the list of companies
+            get customer by id
             </summary>
-            <param name="companyParameters"></param>
-            <returns>The companies list</returns>
+            <param name="id"></param>
+            <returns>New User</returns>
         </member>
-        <member name="M:Presentation.Controllers.CompaniesController.CreateCompany(Application.DataTransferObjects.CompanyForCreationDto)">
+        <member name="M:Presentation.Controllers.CustomerController.RegisterUser(System.String)">
             <summary>
-            Creates a new company
+            Get customer by username
             </summary>
-            <param name="company"></param>
-            <returns>New Company</returns>
-            <response code="201">Returns new company</response>
-            <response code="400">If items is null</response>
-            <response code="422">If model is invalid</response>
+            <param name="username"></param>
+            <returns>New User</returns>
+        </member>
+        <member name="M:Presentation.Controllers.CustomerController.GetCustomers(Application.Helpers.ResourceParameter)">
+            <summary>
+            get all customers
+            </summary>
+            <param name="parameter"></param>
+            <returns>New User</returns>
+        </member>
+        <member name="M:Presentation.Controllers.DiscountController.CreateDiscount(Application.DataTransferObjects.DiscountCreateDto)">
+            <summary>
+            add a new discount
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Presentation.Controllers.DiscountController.GetDiscountById(System.String)">
+            <summary>
+            get discont by id
+            </summary>
+            <param name="type"></param>
+            <returns>New User</returns>
+        </member>
+        <member name="M:Presentation.Controllers.DiscountController.GetDiscounts(Application.Helpers.ResourceParameter)">
+            <summary>
+            get all customers
+            </summary>
+            <param name="parameter"></param>
+            <returns>New User</returns>
+        </member>
+        <member name="M:Presentation.Controllers.InvoiceController.GetCustomers(Application.DataTransferObjects.GetInvoiceDto)">
+            <summary>
+            get invoice
+            </summary>
+            <param name="model"></param>
+            <returns>New User</returns>
         </member>
     </members>
 </doc>

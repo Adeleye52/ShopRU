@@ -18,24 +18,24 @@ namespace Application.Services
     public class DiscountService : IDiscountService
     {
         private IRepositoryManager _repository { get; set; }
-        private Mapper _mapper { get; set; }
+        private IMapper _mapper { get; set; }
 
-        public DiscountService(IRepositoryManager repository, Mapper mapper)
+        public DiscountService(IRepositoryManager repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<SuccessResponse<CouponDto>> AddDiscount(CouponCreateDto model)
+        public async Task<SuccessResponse<DiscountDto>> AddDiscount(DiscountCreateDto model)
         {
-            var discountExists = await _repository.Coupon.ExistsAsync(x => x.Type.ToLower() == model.Type.ToLower());
+            var discountExists = await _repository.Discount.ExistsAsync(x => x.Type.ToLower() == model.Type.ToLower());
             if (discountExists)
                 throw new RestException(HttpStatusCode.BadRequest, "A discount with this type already exist");
             var discount = _mapper.Map<Discount>(model);
-            await _repository.Coupon.AddAsync(discount);
+            await _repository.Discount.AddAsync(discount);
             await _repository.SaveChangesAsync();
-            var response = _mapper.Map<CouponDto>(discount);
-            return new SuccessResponse<CouponDto>
+            var response = _mapper.Map<DiscountDto>(discount);
+            return new SuccessResponse<DiscountDto>
             {
                 Success = true,
                 Message = "Data created successfully",
@@ -43,10 +43,10 @@ namespace Application.Services
             };
         }
 
-        public async Task<PagedResponse<IEnumerable<CouponDto>>> GetAll(ResourceParameter parameter, string name, IUrlHelper urlHelper)
+        public async Task<PagedResponse<IEnumerable<DiscountDto>>> GetAll(ResourceParameter parameter, string name, IUrlHelper urlHelper)
         {
 
-            var query = _repository.Coupon.QueryAll();
+            var query = _repository.Discount.QueryAll();
 
             if (!string.IsNullOrEmpty(parameter.Search))
             {
@@ -58,12 +58,12 @@ namespace Application.Services
 
             query = query.OrderByDescending(x => x.CreatedAt);
 
-            var projectedQuery = query.ProjectTo<CouponDto>(_mapper.ConfigurationProvider);
+            var projectedQuery = query.ProjectTo<DiscountDto>(_mapper.ConfigurationProvider);
 
-            var discounts = await PagedList<CouponDto>.Create(projectedQuery, parameter.PageNumber, parameter.PageSize, parameter.Sort);
-            var page = PageUtility<CouponDto>.CreateResourcePageUrl(parameter, name, discounts, urlHelper);
+            var discounts = await PagedList<DiscountDto>.Create(projectedQuery, parameter.PageNumber, parameter.PageSize, parameter.Sort);
+            var page = PageUtility<DiscountDto>.CreateResourcePageUrl(parameter, name, discounts, urlHelper);
 
-            return new PagedResponse<IEnumerable<CouponDto>>
+            return new PagedResponse<IEnumerable<DiscountDto>>
             {
                 Message = "Data retrieved successfully",
                 Data = discounts,
@@ -74,13 +74,13 @@ namespace Application.Services
             };
         }
 
-        public async Task<SuccessResponse<CouponDto>> GetByType(string type)
+        public async Task<SuccessResponse<DiscountDto>> GetByType(string type)
         {
-            var discount = await _repository.Coupon.FirstOrDefaultAsync(x => x.Type.ToLower() == type.ToLower());
+            var discount = await _repository.Discount.FirstOrDefaultAsync(x => x.Type.ToLower() == type.ToLower());
             if (discount == null)
                 throw new RestException(HttpStatusCode.NotFound, "Discount not found");
-            var response = _mapper.Map<CouponDto>(discount);
-            return new SuccessResponse<CouponDto>
+            var response = _mapper.Map<DiscountDto>(discount);
+            return new SuccessResponse<DiscountDto>
             {
                 Message = "Data retrieved successfully",
                 Data = response,

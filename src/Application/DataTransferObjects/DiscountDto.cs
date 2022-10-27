@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace Application.DataTransferObjects
 {
-    public record CouponDto
+    public record DiscountDto
     {
         public Guid Id { get; set; }
         public string Type { get; set; }
         public string Description { get; set; }
-        public int Percentage { get; set; }
+        public decimal Percentage { get; set; }
     }
-     public record CouponCreateDto
+     public record DiscountCreateDto
     {
         public string Type { get; set; }
         public string Description { get; set; }
-        public int Percentage { get; set; }
+        public decimal Percentage { get; set; }
     }
 
 }

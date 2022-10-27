@@ -8,7 +8,9 @@ namespace Domain.Enums
         Affilate = 1,
         [Description("Employee of the store")]
         Employee = 2,
-        
+        [Description("other customers the store")]
+        Other = 2,
+
     }
     public enum EDiscountType
     {

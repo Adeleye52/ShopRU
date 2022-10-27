@@ -1,5 +1,5 @@
 using Infrastructure.Contracts;
-using Infrastructure.Data.DbContext;
+using Infrastructure.Data.Persistence;
 using Infrastructure.Repositories;
 
 namespace Infrastructure;
@@ -8,19 +8,19 @@ public class RepositoryManager : IRepositoryManager
 {
     private readonly AppDbContext _appDbContext;
     private readonly Lazy<ICustomerRepository> _customerRepository;
-    private readonly Lazy<ICouponRepository> _couponRepository;
+    private readonly Lazy<IDiscountRepository> _discountRepository;
 
     public RepositoryManager(AppDbContext appDbContext)
     {
         _appDbContext = appDbContext;
         _customerRepository = new Lazy<ICustomerRepository>(() => new CustomerRepository(appDbContext));
-        _couponRepository = new Lazy<ICouponRepository>(() => new CouponRepository(appDbContext));
+        _discountRepository = new Lazy<IDiscountRepository>(() => new DiscountRepository(appDbContext));
 
 
     }
 
     public ICustomerRepository Customer => _customerRepository.Value;
-    public ICouponRepository Coupon => _couponRepository.Value;
+    public IDiscountRepository Discount => _discountRepository.Value;
 
     public async Task<int> SaveChangesAsync() => await _appDbContext.SaveChangesAsync();
     public async Task BeginTransaction(Func<Task> action)

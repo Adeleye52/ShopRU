@@ -1,25 +1,25 @@
 using API.Extensions;
+using API.Middlewares;
 using AspNetCoreRateLimit;
 using Infrastructure.Contracts;
+using Infrastructure.Data.Persistence;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using NLog;
 using Presentation;
 using Presentation.ActionFilters;
 
-#pragma warning disable ASP0000
-NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter() => new ServiceCollection().AddLogging().AddMvc()
-    .AddNewtonsoftJson().Services.BuildServiceProvider().GetRequiredService<IOptions<MvcOptions>>().Value
-#pragma warning restore ASP0000
-    .InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().First();
 
 var builder = WebApplication.CreateBuilder(args);
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
 // Add services to the container.
 builder.Services.ConfigureCors();
+builder.Services.ConfigureMvc();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.ConfigureIisIntegration();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureRepositoryManager();
@@ -30,57 +30,50 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 builder.Services.AddScoped<ValidationFilterAttribute>();
-builder.Services.AddControllers(config =>
-    {
-        config.RespectBrowserAcceptHeader = true;
-        config.ReturnHttpNotAcceptable = true;
-        config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
-        config.CacheProfiles.Add("120SecondsDuration", new CacheProfile { Duration = 120 });
-    })
-    .AddXmlDataContractSerializerFormatters()
-    .AddApplicationPart(typeof(AssemblyReference).Assembly);
+builder.Services.AddControllers()
+    .AddXmlDataContractSerializerFormatters();
 builder.Services.AddAutoMapper(typeof(Program));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwagger();
-builder.Services.ConfigureVersioning();
-// Caching
-builder.Services.ConfigureResponseCaching();
-builder.Services.ConfigureHttpCacheHeaders();
-// Rate Limiting
-builder.Services.AddMemoryCache();
-builder.Services.ConfigureRateLimitingOptions();
-builder.Services.AddHttpContextAccessor();
-// Identity
-builder.Services.AddAuthentication();
-builder.Services.ConfigureIdentity();
-builder.Services.ConfigureJWT(builder.Configuration);
 
+builder.Services.ConfigureApiVersioning(builder.Configuration);
 
 var app = builder.Build();
+var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 var logger = app.Services.GetRequiredService<ILoggerManager>();
-app.ConfigureExceptionHandler(logger);
+
+app.SeedCustomer().Wait();
+app.SeedDiscount().Wait();
+app.UseErrorHandler();
 if (app.Environment.IsProduction())
 {
     app.UseHsts();
 }
-
+app.UseRouting();
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
+    {
+        c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+            description.GroupName.ToUpperInvariant());
+    }
+    c.ConfigObject.AdditionalItems.Add("persistAuthorization", "true");
+});
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
-app.UseIpRateLimiting();
 app.UseCors("CorsPolicy");
-app.UseResponseCaching();
-app.UseHttpCacheHeaders();
-app.UseAuthentication();
-app.UseAuthorization();
 
-app.MapControllers();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();

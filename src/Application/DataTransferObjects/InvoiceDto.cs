@@ -11,7 +11,14 @@ namespace Application.DataTransferObjects
         public Guid CustomerId { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal DiscountedPrice { get; set; }
-        public int DiscoutPercentage { get; set; }
+        public decimal DiscoutPercentage { get; set; }
+
+    }
+    public record GetInvoiceDto
+    {
+        public Guid CustomerId { get; set; }
+        public string ShoppingType { get; set; }
+        public decimal TotalBill { get; set; }
 
     }
 }

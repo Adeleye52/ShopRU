@@ -12,9 +12,9 @@ namespace Application.Contracts
 {
     public interface IDiscountService
     {
-        Task<SuccessResponse<CouponDto>> AddDiscount(CouponCreateDto model);
-        Task<SuccessResponse<CouponDto>> GetByType(string type);
-        Task<PagedResponse<IEnumerable<CouponDto>>> GetAll(ResourceParameter parameter, string name, IUrlHelper urlHelper);
+        Task<SuccessResponse<DiscountDto>> AddDiscount(DiscountCreateDto model);
+        Task<SuccessResponse<DiscountDto>> GetByType(string type);
+        Task<PagedResponse<IEnumerable<DiscountDto>>> GetAll(ResourceParameter parameter, string name, IUrlHelper urlHelper);
 
     }
 }
