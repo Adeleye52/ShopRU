@@ -1,4 +1,4 @@
-# StanbicIBTC Bank UPL API
+# ShopRu UPL API
 
 ## Prerequisites
 Before you begin, ensure you have installed the following
