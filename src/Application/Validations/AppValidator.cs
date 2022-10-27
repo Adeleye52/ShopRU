@@ -14,7 +14,7 @@ namespace Application.Validations
             RuleFor(x => x.FirstName).NotEmpty();
             RuleFor(x => x.LastName).NotEmpty();
             RuleFor(x => x.UserName).NotEmpty();
-            RuleFor(x => x.EmailAddress).EmailAddress().WithMessage("Enter a Valid Email Address").NotEmpty();
+            RuleFor(x => x.EmailAddress).EmailAddress().WithMessage("Enter a Valid Email Address");
             RuleFor(x => x.Type).IsEnumName(typeof(ECustomerType), caseSensitive: false).WithMessage("This value is not a valid Customer type. Please selecect either Affiliate, Employee or Other"); 
          
         }
@@ -23,7 +23,6 @@ namespace Application.Validations
     {
         public DiscountValidator()
         {
-            RuleFor(x => x.Type).IsEnumName(typeof(EDiscountType), caseSensitive: false).WithMessage("This value is not a valid Customer type. Please selecect either Affiliate, Employee, LongTermUser, or ProductPrice");
             RuleFor(x => x.Percentage).GreaterThan(0);
 
         }
