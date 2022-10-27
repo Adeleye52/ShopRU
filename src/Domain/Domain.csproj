@@ -12,10 +12,5 @@
 
     <ItemGroup>
       <None Remove="Responses\" />
-      <None Remove="Responses\Specs\" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Responses\" />
-      <Folder Include="Responses\Specs\" />
     </ItemGroup>
 </Project>

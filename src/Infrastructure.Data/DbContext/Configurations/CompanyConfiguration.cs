@@ -4,19 +4,19 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.DbContext.Configurations;
 
-public class CompanyConfiguration : IEntityTypeConfiguration<Company>
+public class CompanyConfiguration : IEntityTypeConfiguration<Discount>
 {
-    public void Configure(EntityTypeBuilder<Company> builder)
+    public void Configure(EntityTypeBuilder<Discount> builder)
     {
         builder.HasData
         (
-            new Company
+            new Discount
             {
                 Name = "Prunedge Deevelopment Technologies",
                 Address = "32, Ade Ajayi Street, Ogudu GRA, Lagos",
                 Country = "Nigeria"
             },
-            new Company
+            new Discount
             {
                 Name = "Elsavia",
                 Address = "7b, Omo Ighodalo Street, Ogudu GRA, Lagos",

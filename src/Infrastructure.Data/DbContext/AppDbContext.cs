@@ -20,6 +20,5 @@ public class AppDbContext : IdentityDbContext<User>
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
     }
 
-    public DbSet<Company> Companies { get; set; }
-    public DbSet<Employee> Employees { get; set; }
+    
 }

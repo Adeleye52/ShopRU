@@ -38,7 +38,6 @@ builder.Services.AddControllers(config =>
         config.CacheProfiles.Add("120SecondsDuration", new CacheProfile { Duration = 120 });
     })
     .AddXmlDataContractSerializerFormatters()
-    .AddCustomCSVFormatter()
     .AddApplicationPart(typeof(AssemblyReference).Assembly);
 builder.Services.AddAutoMapper(typeof(Program));
 

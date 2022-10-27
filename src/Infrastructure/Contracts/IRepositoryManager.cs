@@ -2,7 +2,8 @@ namespace Infrastructure.Contracts;
 
 public interface IRepositoryManager
 {
-    ICompanyRepository Company { get; }
-    IEmployeeRepository Employee { get; }
-    Task SaveAsync();
+    ICustomerRepository Customer { get; }
+    ICouponRepository Coupon { get; }
+    Task<int> SaveChangesAsync();
+    Task BeginTransaction(Func<Task> action);
 }

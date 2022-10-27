@@ -1,5 +1,4 @@
 using System.Text;
-using API.Formatters;
 using Application.Contracts;
 using Application.Services;
 using AspNetCoreRateLimit;
@@ -47,11 +46,9 @@ public static class ServiceExtensions
         serviceCollection.AddDbContext<AppDbContext>(
             opts =>
             {
-                opts.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                opts.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
             });
 
-    public static IMvcBuilder AddCustomCSVFormatter(this IMvcBuilder builder) =>
-        builder.AddMvcOptions(config => config.OutputFormatters.Add(new CsvOutputFormatter()));
 
     public static void ConfigureVersioning(this IServiceCollection services)
     {
@@ -147,19 +144,19 @@ public static class ServiceExtensions
         services.AddSwaggerGen(s =>
         {
             s.SwaggerDoc("v1", new OpenApiInfo {
-                Title = "Prunedge Web API",
+                Title = "ShopRU API",
                 Version = "v1",
-                Description = "Prunedge Web API Template",
+                Description = "ShopRu Web API Template",
                 TermsOfService = new Uri("https://prunedge.com/terms"),
                 Contact = new OpenApiContact
                 {
-                    Name = "Daniel Ale",
-                    Email = "developer@prunedge.com",
-                    Url = new Uri("https://prunedge.com/danielale")
+                    Name = "Abdul Lateeef Adeleye",
+                    Email = "",
+                    Url = new Uri("")
                 },
                 License = new OpenApiLicense
                 {
-                    Name = "Prunedge API LICX",
+                    Name = "Shop API LICX",
                     Url = new Uri("https://prunedge.com/developer-licence")
                 }
             });

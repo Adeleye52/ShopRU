@@ -7,18 +7,37 @@ namespace Infrastructure;
 public class RepositoryManager : IRepositoryManager
 {
     private readonly AppDbContext _appDbContext;
-    private readonly Lazy<ICompanyRepository> _companyRepository;
-    private readonly Lazy<IEmployeeRepository> _employeeRepository;
+    private readonly Lazy<ICustomerRepository> _customerRepository;
+    private readonly Lazy<ICouponRepository> _couponRepository;
 
     public RepositoryManager(AppDbContext appDbContext)
     {
         _appDbContext = appDbContext;
-        _companyRepository = new Lazy<ICompanyRepository>(() => new CompanyRepository(appDbContext));
-        _employeeRepository = new Lazy<IEmployeeRepository>(() => new EmployeeRepository(appDbContext));
+        _customerRepository = new Lazy<ICustomerRepository>(() => new CustomerRepository(appDbContext));
+        _couponRepository = new Lazy<ICouponRepository>(() => new CouponRepository(appDbContext));
+
+
     }
 
-    public ICompanyRepository Company => _companyRepository.Value;
-    public IEmployeeRepository Employee => _employeeRepository.Value;
+    public ICustomerRepository Customer => _customerRepository.Value;
+    public ICouponRepository Coupon => _couponRepository.Value;
 
-    public async Task SaveAsync() => await _appDbContext.SaveChangesAsync();
+    public async Task<int> SaveChangesAsync() => await _appDbContext.SaveChangesAsync();
+    public async Task BeginTransaction(Func<Task> action)
+    {
+        await using var transaction = await _appDbContext.Database.BeginTransactionAsync();
+        try
+        {
+            await action();
+
+            await SaveChangesAsync();
+            await transaction.CommitAsync();
+
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
 }
