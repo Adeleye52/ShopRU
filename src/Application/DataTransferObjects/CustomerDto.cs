@@ -28,8 +28,6 @@ public record CustomerCreateDto
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string EmailAddress { get; set; }
-    [Required]
-    [EnumDataType(typeof(ECustomerType))]
     public string Type { get; set; }
     public string AddressLine { get; set; }
     public string Country { get; set; }

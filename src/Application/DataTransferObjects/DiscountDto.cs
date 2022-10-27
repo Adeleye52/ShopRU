@@ -17,8 +17,6 @@ namespace Application.DataTransferObjects
     }
      public record DiscountCreateDto
     {
-        [Required]
-        [EnumDataType(typeof(EDiscountType))]
         public string Type { get; set; }
         public string Description { get; set; }
         public decimal Percentage { get; set; }
