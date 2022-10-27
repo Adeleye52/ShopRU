@@ -16,28 +16,14 @@ Visual Studio 2022 community edition or Visaul Code is the preferred IDE
 ## Setup project
 
 1. Clone the repository
-	`git clone https://github.com/Prunedge-Dev-Team/stanbic-upl-api.git`
+	`git clone https://github.com/Adeleye52/ShopRU.git`
 2. Create appsettings.Development.json and add the following 
 3. 
    ```json
    {
         "ConnectionStrings": {
-            "DefaultConnection": "Server=161.35.131.73,8033;Database=StanbicUplDb;User Id=sa;Password=yxH3nV9o4L;MultipleActiveResultSets=true"
-        },
-        "ModuleId": "UHJ1bmVFZGVnZV9VQVQ6MA==",
-        "Authorization": "basic cmJ4RGV2ZWxvcGVyMjpyYjVkM3YzbDBwM3I=",
-        "StanbicRedBox": {
-            "Url": "https://dev.stanbicibtc.com:8443/uat/redbox/services/request-manager",
-            "BvnBaseUrl": "https://dev.stanbicibtc.com:8443",
-            "PrivateCreditCheckBaseUrl": "https://10.234.135.40:8443",
-            "CbnCreditCheckUrl": "https://10.234.135.44:8443/uat/redbox/services/request-manager",
-            "PathUrl": {
-            "BvnApi": "uat/redbox/service/api/bvn/getbvndetails",
-            "PrivateCreditCheckApi": "uat/redbox/v2/services/loans/worthiness"
-            }
-        },
-        "SENDGRID_KEY": "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",
-        "SENDER_EMAIL": "noreply@prunedge.com"
+            "DefaultConnection": ""
+        }
    }
    ```
 
